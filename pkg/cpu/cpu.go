@@ -40,12 +40,34 @@ const (
 	flagC = 1 << 4 // Carry flag
 )
 
-// Set/Clear functionality for a RegisterAF
-func (af *RegisterAF) SetZ()   { af.F |= flagZ }
-func (af *RegisterAF) ClearZ() { af.F &^= flagZ }
-func (af *RegisterAF) SetN()   { af.F |= flagN }
-func (af *RegisterAF) ClearN() { af.F &^= flagN }
-func (af *RegisterAF) SetH()   { af.F |= flagH }
-func (af *RegisterAF) ClearH() { af.F &^= flagH }
-func (af *RegisterAF) SetC()   { af.F |= flagC }
-func (af *RegisterAF) ClearC() { af.F &^= flagC }
+func (af *RegisterAF) SetZ(on bool) {
+	if on {
+		af.F |= flagZ
+	} else {
+		af.F &^= flagZ
+	}
+}
+
+func (af *RegisterAF) SetN(on bool) {
+	if on {
+		af.F |= flagN
+	} else {
+		af.F &^= flagN
+	}
+}
+
+func (af *RegisterAF) SetH(on bool) {
+	if on {
+		af.F |= flagH
+	} else {
+		af.F &^= flagH
+	}
+}
+
+func (af *RegisterAF) SetC(on bool) {
+	if on {
+		af.F |= flagC
+	} else {
+		af.F &^= flagC
+	}
+}
