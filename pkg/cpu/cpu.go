@@ -10,6 +10,19 @@ type CPU struct {
 	PC uint16
 }
 
+func New() *CPU {
+	cpu := CPU{
+		AF: RegisterAF{A: 0x01, F: 0xB0},
+		SP: 0xFFFE,
+		PC: 0x0100,
+	}
+	cpu.BC.SetCombined(0x0013)
+	cpu.DE.SetCombined(0x00D8)
+	cpu.HL.SetCombined(0x014D)
+
+	return &cpu
+}
+
 // RegisterPair represents registers that can be either
 // one 16-bit register or two separate 8-bit registers.
 type RegisterPair struct {
@@ -22,7 +35,7 @@ func (rp RegisterPair) Combined() uint16 {
 	return uint16(rp.High)<<8 | uint16(rp.Low)
 }
 
-func (rp *RegisterPair) SetFull(value uint16) {
+func (rp *RegisterPair) SetCombined(value uint16) {
 	rp.High = byte(value >> 8)
 	rp.Low = byte(value & 0xFF)
 }
