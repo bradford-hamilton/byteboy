@@ -1,5 +1,7 @@
 package cpu
 
+import "fmt"
+
 type CPU struct {
 	AF RegisterAF
 	BC RegisterPair
@@ -46,6 +48,11 @@ type RegisterAF struct {
 	F byte // flags
 }
 
+// Combined returns the full 16-bit combined register value for RegisterAF.
+func (af RegisterAF) Combined() uint16 {
+	return uint16(af.A)<<8 | uint16(af.F)
+}
+
 const (
 	flagZ = 1 << 7 // Zero flag
 	flagN = 1 << 6 // Subtraction flag
@@ -83,4 +90,22 @@ func (af *RegisterAF) SetC(on bool) {
 	} else {
 		af.F &^= flagC
 	}
+}
+
+func (cpu *CPU) String() string {
+	return fmt.Sprintf(
+		"CPU State:\n"+
+			"AF: %04X  A: %02X  F: %02X\n"+
+			"BC: %04X  B: %02X  C: %02X\n"+
+			"DE: %04X  D: %02X  E: %02X\n"+
+			"HL: %04X  H: %02X  L: %02X\n"+
+			"SP: %04X\n"+
+			"PC: %04X",
+		cpu.AF.Combined(), cpu.AF.A, cpu.AF.F,
+		cpu.BC.Combined(), cpu.BC.High, cpu.BC.Low,
+		cpu.DE.Combined(), cpu.DE.High, cpu.DE.Low,
+		cpu.HL.Combined(), cpu.HL.High, cpu.HL.Low,
+		cpu.SP,
+		cpu.PC,
+	)
 }
