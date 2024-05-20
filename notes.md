@@ -1,7 +1,7 @@
 - soc -> CPU + PPU + APU
 - 8kb VRAM
 - 8kb WRAM
-- 6 registers, 16 bit each: AF, BC, DE, HL, SP and PC
+- 6 registers, 16 bit each: AF, BC, DE, HL, SP and PC. Most registers can be accessed either as one 16-bit register, or as two separate 8-bit registers.
 - Game Boy SoCs contain a Sharp SM83 CPU core, which is an 8-bit CPU core closely resembling
 Zilog Z80 and Intel 8080 but is neither
 
