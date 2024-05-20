@@ -2,6 +2,8 @@ package cpu
 
 import "fmt"
 
+// CPU represents a game boy's CPU.
+// https://gbdev.io/pandocs/CPU_Registers_and_Flags.html
 type CPU struct {
 	AF RegisterAF
 	BC RegisterPair
@@ -60,6 +62,7 @@ const (
 	flagC = 1 << 4 // Carry flag
 )
 
+// SetZ sets flag Z on/off.
 func (af *RegisterAF) SetZ(on bool) {
 	if on {
 		af.F |= flagZ
@@ -68,6 +71,7 @@ func (af *RegisterAF) SetZ(on bool) {
 	}
 }
 
+// SetN sets flag N on/off.
 func (af *RegisterAF) SetN(on bool) {
 	if on {
 		af.F |= flagN
@@ -76,6 +80,7 @@ func (af *RegisterAF) SetN(on bool) {
 	}
 }
 
+// SetH sets flag H on/off.
 func (af *RegisterAF) SetH(on bool) {
 	if on {
 		af.F |= flagH
@@ -84,6 +89,7 @@ func (af *RegisterAF) SetH(on bool) {
 	}
 }
 
+// SetC sets flag C on/off.
 func (af *RegisterAF) SetC(on bool) {
 	if on {
 		af.F |= flagC
