@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/bradford-hamilton/byteboy/pkg/cpu"
+	"github.com/bradford-hamilton/byteboy/pkg/byteboy"
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +24,6 @@ func runByteBoy(cmd *cobra.Command, args []string) {
 	pathToROM := os.Args[2]
 	fmt.Printf("path to rom: %s", pathToROM)
 
-	cpu := cpu.New()
-	fmt.Printf("cpu: %+v", cpu)
+	bb := byteboy.New()
+	fmt.Printf("bb: %v", bb)
 }
