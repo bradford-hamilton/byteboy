@@ -1,12 +1,15 @@
 package main
 
 import (
-	"fmt"
-
-	"github.com/bradford-hamilton/byteboy/pkg/cpu"
+	"github.com/bradford-hamilton/byteboy/cmd"
+	"github.com/faiface/pixel/pixelgl"
 )
 
+// pixelgl needs access to the main thread
 func main() {
-	cpu := cpu.New()
-	fmt.Println(cpu)
+	pixelgl.Run(runByteBoy)
+}
+
+func runByteBoy() {
+	cmd.Execute()
 }
