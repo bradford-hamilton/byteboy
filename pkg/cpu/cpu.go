@@ -98,6 +98,11 @@ func (af *RegisterAF) SetC(on bool) {
 	}
 }
 
+func (af RegisterAF) GetZ() bool { return af.F&flagZ != 0 }
+func (af RegisterAF) GetN() bool { return af.F&flagN != 0 }
+func (af RegisterAF) GetH() bool { return af.F&flagH != 0 }
+func (af RegisterAF) GetC() bool { return af.F&flagC != 0 }
+
 func (cpu *CPU) String() string {
 	return fmt.Sprintf(
 		"CPU State:\n"+
