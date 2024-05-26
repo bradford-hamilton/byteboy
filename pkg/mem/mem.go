@@ -1,5 +1,9 @@
 package mem
 
-type Memory struct{}
+import "github.com/bradford-hamilton/byteboy/pkg/cart"
+
+type Memory struct {
+	cart *cart.Cart
+}
 
 func New() *Memory { return &Memory{} }
