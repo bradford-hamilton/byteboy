@@ -19,7 +19,7 @@ const (
 // ByteBoy represents the main gameboy structure.
 type ByteBoy struct {
 	cpu *cpu.CPU
-	mem *mem.Memory
+	mem *mem.MMU
 	apu *apu.APU
 	ppu *ppu.PPU
 
