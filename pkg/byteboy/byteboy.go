@@ -43,18 +43,16 @@ func New() *ByteBoy {
 		screenToRender: [screenWidth][screenHeight][3]uint8{},
 	}
 
-	b.initializeOpcodeMap()
+	b.initializeOpcodeHandlers()
 
 	return b
 }
 
-func (b *ByteBoy) initializeOpcodeMap() {
+func (b *ByteBoy) initializeOpcodeHandlers() {
 	b.opcodeHandlers = map[byte]func(){
 		0x00: b.NOOP,
 	}
 }
-
-func (b *ByteBoy) NOOP() { /* TODO */ }
 
 func (b *ByteBoy) emulateCycle() {
 	opcode := b.fetchOpcode()
@@ -70,5 +68,6 @@ func (b *ByteBoy) emulateCycle() {
 func (b *ByteBoy) fetchOpcode() byte {
 	opcode := b.mmu.ReadByte(b.cpu.PC)
 	b.cpu.PC++
+
 	return opcode
 }
