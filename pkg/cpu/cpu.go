@@ -2,13 +2,17 @@ package cpu
 
 import "fmt"
 
-// CPU represents a game boy's CPU.
+// CPU represents a Game Boy's CPU.
 // https://gbdev.io/pandocs/CPU_Registers_and_Flags.html
 type CPU struct {
-	AF RegisterAF
-	BC RegisterPair
-	DE RegisterPair
-	HL RegisterPair
+	A byte
+	F byte
+	B byte
+	C byte
+	D byte
+	E byte
+	H byte
+	L byte
 
 	SP uint16
 	PC uint16
@@ -16,43 +20,71 @@ type CPU struct {
 
 func New() *CPU {
 	cpu := CPU{
-		AF: RegisterAF{A: 0x01, F: 0xB0},
+		A:  0x01,
+		F:  0xB0,
 		SP: 0xFFFE,
 		PC: 0x0100,
+		B:  0x00,
+		C:  0x13,
+		D:  0x00,
+		E:  0xD8,
+		H:  0x01,
+		L:  0x4D,
 	}
-	cpu.BC.SetCombined(0x0013)
-	cpu.DE.SetCombined(0x00D8)
-	cpu.HL.SetCombined(0x014D)
 
 	return &cpu
 }
 
-// RegisterPair represents registers that can be either
-// one 16-bit register or two separate 8-bit registers.
-type RegisterPair struct {
-	High byte // 8-bit high
-	Low  byte // 8-bit low
+// GetAF returns the combined value of registers A and F.
+func (cpu *CPU) GetAF() uint16 {
+	return get16BitValue(cpu.A, cpu.F)
 }
 
-// Combined returns the full 16-bit combined register value.
-func (rp RegisterPair) Combined() uint16 {
-	return uint16(rp.High)<<8 | uint16(rp.Low)
+// SetAF sets the combined value of registers A and F.
+func (cpu *CPU) SetAF(value uint16) {
+	cpu.A, cpu.F = set16BitValue(value)
 }
 
-func (rp *RegisterPair) SetCombined(value uint16) {
-	rp.High = byte(value >> 8)
-	rp.Low = byte(value & 0xFF)
+// GetBC returns the combined value of registers B and C.
+func (cpu *CPU) GetBC() uint16 {
+	return get16BitValue(cpu.B, cpu.C)
 }
 
-// RegisterAF combines the A register with flags into a single struct.
-type RegisterAF struct {
-	A byte // accumulator
-	F byte // flags
+// SetBC sets the combined value of registers B and C.
+func (cpu *CPU) SetBC(value uint16) {
+	cpu.B, cpu.C = set16BitValue(value)
 }
 
-// Combined returns the full 16-bit combined register value for RegisterAF.
-func (af RegisterAF) Combined() uint16 {
-	return uint16(af.A)<<8 | uint16(af.F)
+// GetDE returns the combined value of registers D and E.
+func (cpu *CPU) GetDE() uint16 {
+	return get16BitValue(cpu.D, cpu.E)
+}
+
+// SetDE sets the combined value of registers D and E.
+func (cpu *CPU) SetDE(value uint16) {
+	cpu.D, cpu.E = set16BitValue(value)
+}
+
+// GetHL returns the combined value of registers H and L.
+func (cpu *CPU) GetHL() uint16 {
+	return get16BitValue(cpu.H, cpu.L)
+}
+
+// SetHL sets the combined value of registers H and L.
+func (cpu *CPU) SetHL(value uint16) {
+	cpu.H, cpu.L = set16BitValue(value)
+}
+
+// get16BitValue returns the full 16-bit combined value.
+func get16BitValue(high, low byte) uint16 {
+	return uint16(high)<<8 | uint16(low)
+}
+
+// set16BitValue sets the 16-bit combined register value.
+func set16BitValue(value uint16) (byte, byte) {
+	high := byte(value >> 8)
+	low := byte(value & 0xFF)
+	return high, low
 }
 
 const (
@@ -63,45 +95,52 @@ const (
 )
 
 // SetZ sets flag Z on/off.
-func (af *RegisterAF) SetZ(on bool) {
+func (cpu *CPU) SetZ(on bool) {
 	if on {
-		af.F |= flagZ
+		cpu.F |= flagZ
 	} else {
-		af.F &^= flagZ
+		cpu.F &^= flagZ
 	}
 }
 
 // SetN sets flag N on/off.
-func (af *RegisterAF) SetN(on bool) {
+func (cpu *CPU) SetN(on bool) {
 	if on {
-		af.F |= flagN
+		cpu.F |= flagN
 	} else {
-		af.F &^= flagN
+		cpu.F &^= flagN
 	}
 }
 
 // SetH sets flag H on/off.
-func (af *RegisterAF) SetH(on bool) {
+func (cpu *CPU) SetH(on bool) {
 	if on {
-		af.F |= flagH
+		cpu.F |= flagH
 	} else {
-		af.F &^= flagH
+		cpu.F &^= flagH
 	}
 }
 
 // SetC sets flag C on/off.
-func (af *RegisterAF) SetC(on bool) {
+func (cpu *CPU) SetC(on bool) {
 	if on {
-		af.F |= flagC
+		cpu.F |= flagC
 	} else {
-		af.F &^= flagC
+		cpu.F &^= flagC
 	}
 }
 
-func (af RegisterAF) GetZ() bool { return af.F&flagZ != 0 }
-func (af RegisterAF) GetN() bool { return af.F&flagN != 0 }
-func (af RegisterAF) GetH() bool { return af.F&flagH != 0 }
-func (af RegisterAF) GetC() bool { return af.F&flagC != 0 }
+// GetZ returns the status of flag Z.
+func (cpu *CPU) GetZ() bool { return cpu.F&flagZ != 0 }
+
+// GetN returns the status of flag N.
+func (cpu *CPU) GetN() bool { return cpu.F&flagN != 0 }
+
+// GetH returns the status of flag H.
+func (cpu *CPU) GetH() bool { return cpu.F&flagH != 0 }
+
+// GetC returns the status of flag C.
+func (cpu *CPU) GetC() bool { return cpu.F&flagC != 0 }
 
 func (cpu *CPU) String() string {
 	return fmt.Sprintf(
@@ -111,12 +150,14 @@ func (cpu *CPU) String() string {
 			"DE: %04X  D: %02X  E: %02X\n"+
 			"HL: %04X  H: %02X  L: %02X\n"+
 			"SP: %04X\n"+
-			"PC: %04X",
-		cpu.AF.Combined(), cpu.AF.A, cpu.AF.F,
-		cpu.BC.Combined(), cpu.BC.High, cpu.BC.Low,
-		cpu.DE.Combined(), cpu.DE.High, cpu.DE.Low,
-		cpu.HL.Combined(), cpu.HL.High, cpu.HL.Low,
+			"PC: %04X\n"+
+			"Flags: Z: %t, N: %t, H: %t, C: %t",
+		cpu.GetAF(), cpu.A, cpu.F,
+		cpu.GetBC(), cpu.B, cpu.C,
+		cpu.GetDE(), cpu.D, cpu.E,
+		cpu.GetHL(), cpu.H, cpu.L,
 		cpu.SP,
 		cpu.PC,
+		cpu.GetZ(), cpu.GetN(), cpu.GetH(), cpu.GetC(),
 	)
 }
