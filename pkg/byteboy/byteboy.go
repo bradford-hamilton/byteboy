@@ -1,6 +1,8 @@
 package byteboy
 
 import (
+	"fmt"
+
 	"github.com/bradford-hamilton/byteboy/pkg/apu"
 	"github.com/bradford-hamilton/byteboy/pkg/cpu"
 	"github.com/bradford-hamilton/byteboy/pkg/mem"
@@ -19,9 +21,11 @@ const (
 // ByteBoy represents the main gameboy structure.
 type ByteBoy struct {
 	cpu *cpu.CPU
-	mem *mem.MMU
+	mmu *mem.MMU
 	apu *apu.APU
 	ppu *ppu.PPU
+
+	opcodeHandlers map[byte]func()
 
 	screen         [screenWidth][screenHeight][3]uint8
 	screenToRender [screenWidth][screenHeight][3]uint8
@@ -30,12 +34,41 @@ type ByteBoy struct {
 }
 
 func New() *ByteBoy {
-	return &ByteBoy{
+	b := &ByteBoy{
 		cpu:            cpu.New(),
-		mem:            mem.New(),
+		mmu:            mem.New(),
 		apu:            apu.New(),
 		ppu:            ppu.New(),
 		screen:         [screenWidth][screenHeight][3]uint8{},
 		screenToRender: [screenWidth][screenHeight][3]uint8{},
 	}
+
+	b.initializeOpcodeMap()
+
+	return b
+}
+
+func (b *ByteBoy) initializeOpcodeMap() {
+	b.opcodeHandlers = map[byte]func(){
+		0x00: b.NOOP,
+	}
+}
+
+func (b *ByteBoy) NOOP() { /* TODO */ }
+
+func (b *ByteBoy) emulateCycle() {
+	opcode := b.fetchOpcode()
+
+	if handler, found := b.opcodeHandlers[opcode]; found {
+		handler()
+	} else {
+		fmt.Printf("Unknown opcode: 0x%X\n", opcode)
+	}
+}
+
+// fetchOpcode fetches the next opcode from memory.
+func (b *ByteBoy) fetchOpcode() byte {
+	opcode := b.mmu.ReadByte(b.cpu.PC)
+	b.cpu.PC++
+	return opcode
 }

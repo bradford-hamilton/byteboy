@@ -16,20 +16,23 @@ type CPU struct {
 
 	SP uint16
 	PC uint16
+
+	opcodes map[byte]func()
 }
 
 func New() *CPU {
 	cpu := CPU{
-		A:  0x01,
-		F:  0xB0,
+		A: 0x01,
+		F: 0xB0,
+		B: 0x00,
+		C: 0x13,
+		D: 0x00,
+		E: 0xD8,
+		H: 0x01,
+		L: 0x4D,
+
 		SP: 0xFFFE,
 		PC: 0x0100,
-		B:  0x00,
-		C:  0x13,
-		D:  0x00,
-		E:  0xD8,
-		H:  0x01,
-		L:  0x4D,
 	}
 
 	return &cpu
